@@ -1,4 +1,5 @@
 <?php
+    //Ver 0.1
     //用一個抽象把取得資料的方法包裝起來，由程式自行去處理快取的動作
     abstract class cache{
         const CACHE_TYPE_JSON = 'json'; //以JSON格式儲存快取
