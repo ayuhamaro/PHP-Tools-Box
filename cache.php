@@ -1,16 +1,17 @@
 <?php
-    //Ver 0.1
-    //用一個抽象把取得資料的方法包裝起來，由程式自行去處理快取的動作
+    //Ver 0.2
+    //用一個抽象類把取得資料的方法包裝起來，由程式自行去處理快取的動作
     abstract class cache{
         const CACHE_TYPE_JSON = 'json'; //以JSON格式儲存快取
         const CACHE_TYPE_SERIAL = 'serial'; //以序列化格式儲存快取
 
         public static $cacheType = self::CACHE_TYPE_JSON;   //預設以JSON儲存快取
         public static $cacheMkdirMode = 0777;   //快取資料夾的權限
+        public static $clearWrap = false;
 
         //因為在一次的行程中會反覆使用，所以使用static模式。且為了避免繼承時被複寫而使用final模式
-        static final function getData($cachePath = '/path/to', $cacheFileName = 'filename.ext',
-                                      $callback = array(), $parameter = array(), $forceUpdateCache = false){
+        public static final function getData($cachePath = '/path/to', $cacheFileName = 'filename.ext',
+                                            $callback = array(), $parameter = array(), $forceUpdateCache = false){
             if(!$forceUpdateCache){ //強制更新的話就不讀取快取，進行查詢、更新快取並傳回
                 $result = @file_get_contents($cachePath.'/'.$cacheFileName);
                 if($result !== false){
@@ -37,6 +38,28 @@
                 mkdir($cachePath, self::$cacheMkdirMode, true);
             }
             if(@file_put_contents($cachePath.'/'.$cacheFileName, $dataString) !== false){
+                return $result;
+            }
+            return false;
+        }
+        //頁面級快取，待測試
+        public static final function getPage($cachePath = '/path/to', $cacheFileName = 'filename.ext',
+                                            $callback = array(), $parameter = array(), $forceUpdateCache = false){
+            if(!$forceUpdateCache){ //強制更新的話就不讀取快取，進行查詢、更新快取並傳回
+                $result = @file_get_contents($cachePath.'/'.$cacheFileName);
+                if($result !== false){
+                    return $result;
+                }
+            }
+            $result = call_user_func_array($callback, $parameter);
+            if(self::$clearWrap){
+                $result = str_replace("\n", "", $result);
+                $result = str_replace("\t", "", $result);
+            }
+            if(!is_dir($cachePath)){
+                mkdir($cachePath, self::$cacheMkdirMode, true);
+            }
+            if(@file_put_contents($cachePath.'/'.$cacheFileName, $result) !== false){
                 return $result;
             }
             return false;
