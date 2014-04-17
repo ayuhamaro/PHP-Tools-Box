@@ -3,7 +3,7 @@
 class Mysession{
 
     private $session = array();
-    public $index = 'funclick_user_session';
+    public $index = 'xxx_user_session';
 
     public function __construct(){
         if( ! session_id())
