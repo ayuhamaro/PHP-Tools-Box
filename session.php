@@ -6,8 +6,7 @@ class Mysession{
     public $index = 'xxx_user_session';
 
     public function __construct(){
-        if( ! session_id())
-        {
+        if( ! session_id()){
             session_start();
         }
     }
@@ -15,15 +14,15 @@ class Mysession{
     public function set($key, $value){
         $this->session = $this->get();
         $this->session[$key] = $value;
-        $_SESSION[$this->index] = json_encode($this->session, JSON_UNESCAPED_UNICODE);
+        $_SESSION[$this->index] = serialize($this->session);
         return $_SESSION[$this->index];
     }
 
     public function get($key = FALSE){
         if( ! isset($_SESSION[$this->index])){
-            $_SESSION[$this->index] = json_encode($this->session, JSON_UNESCAPED_UNICODE);
+            $_SESSION[$this->index] = serialize($this->session);
         }else{
-            $this->session = json_decode($_SESSION[$this->index], TRUE);
+            $this->session = unserialize($_SESSION[$this->index]);
         }
         if($key !== FALSE){
             if(array_key_exists($key, $this->session)){
@@ -41,10 +40,13 @@ class Mysession{
             $this->session = $this->get();
             if(array_key_exists($key, $this->session)){
                 unset($this->session[$key]);
-                $_SESSION[$this->index] = json_encode($this->session, JSON_UNESCAPED_UNICODE);
+                $_SESSION[$this->index] = serialize($this->session);
+                return TRUE;
+            }else{
+                return FALSE;
             }
         }else{
-            $this->destroy();
+            return $this->destroy();
         }
     }
 
@@ -52,5 +54,7 @@ class Mysession{
         $this->session = array();
         session_unset();
         session_destroy();
+        return TRUE;
     }
+
 }
