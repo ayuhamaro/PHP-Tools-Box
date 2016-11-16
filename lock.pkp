@@ -1,0 +1,11 @@
+<?php
+  //用檔案鎖來拖延並發
+  @$lock = fopen(LOCK_PATH.$user_ID.".lock",'w');
+  @flock($lock, LOCK_EX);
+
+
+
+  //解除檔案鎖
+  @flock($lock, LOCK_UN);
+  @fclose($lock);
+?>
