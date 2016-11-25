@@ -12,4 +12,5 @@
         $total = array_sum($dif);
         $cpu = array();
         foreach($dif as $x=>$y) $cpu[$x] = round($y / $total * 100, 1);
+
 ?>
