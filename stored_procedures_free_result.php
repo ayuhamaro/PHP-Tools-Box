@@ -2,6 +2,7 @@
     {
         // http://php.net/manual/en/mysqli.quickstart.stored-procedures.php
         do {
+            // For CodeIgniter
             if ($res = $query->conn_id->store_result()) {
                 $res->free();
             } else {
