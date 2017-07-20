@@ -1,0 +1,41 @@
+    //Query Bindings on CodeIgniter
+    private function _filter2rule($base_rule = NULL, $filter = array(), $date_field = NULL, $begin_date = NULL, $end_date = NULL)
+    {
+        $rule_field = array();
+        $rule_value = array();
+        //載入基本條件
+        if( ! is_null($base_rule) AND is_string($base_rule))
+        {
+            $rule_field[] = $base_rule;
+        }
+        //建立非日期的組合條件
+        if(is_array($filter) AND count($filter) >= 1)
+        {
+            foreach($filter as $key => $value)
+            {
+                $rule_field[] = "$key = ?";
+                $rule_value[] = $value;
+            }
+        }
+        //建立日期的組合條件
+        if( ! is_null($begin_date) AND ! is_null($end_date))
+        {
+            $rule_field[] = "$date_field BETWEEN ? AND ?";
+            $rule_value[] = $begin_date;
+            $rule_value[] = $end_date;
+        }
+        elseif( ! is_null($begin_date))
+        {
+            $rule_field[] = "$date_field >= ?";
+            $rule_value[] = $begin_date;
+        }
+        elseif( ! is_null($end_date))
+        {
+            $rule_field[] = "$date_field <= ?";
+            $rule_value[] = $end_date;
+        }
+        $rule_field_str = join(' AND ', $rule_field);
+        //回傳
+        return array('rule_field_str' => $rule_field_str,
+            'rule_value_array' => $rule_value);
+    }
